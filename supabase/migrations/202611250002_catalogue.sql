@@ -34,7 +34,7 @@ create index products_public_availability_idx on public.products(availability) w
 create index products_public_flags_idx on public.products(is_recommended, is_rare, is_new) where is_published;
 create index categories_public_sort_idx on public.categories(sort_order, name) where is_published;
 
-create function public.set_updated_at() returns trigger
+create or replace function public.set_updated_at() returns trigger
 language plpgsql set search_path = '' as $$
 begin
   new.updated_at = now();

@@ -1,27 +1,43 @@
-# Design System
+# Toy Shop Design System
 
-Use these shared tokens and components across the showroom and admin UI. Nunito Sans is the sole typeface. It is loaded once by the root layout through `next/font/google`; if offline builds are required, replace it centrally with an approved local font asset.
+This is the shared visual specification for all members. Load Nunito Sans once from the root framework layout. Use CSS custom properties in `src/app/globals.css` as the only color source; components must not introduce feature-specific palettes, radius systems, spacing systems, fonts, icon families, or global overrides.
 
-## Tokens
+## Brand and color tokens
+
+Brand character: playful, welcoming, colorful, trustworthy, polished, and uncluttered.
 
 | Token | Light | Dark |
 |---|---|---|
-| Page | `#FFF9F1` | `#171A24` |
-| Surface | `#FFFFFF` | `#222736` |
-| Text | `#24283B` | `#F7F4EF` |
-| Muted | `#697386` | `#B5BDCC` |
-| Coral | `#FF6B6B` | `#FF8585` |
-| Blue | `#4D96FF` | `#70AAFF` |
-| Yellow | `#FFD166` | `#FFD166` |
-| Mint | `#77C9A4` | `#77C9A4` |
-| Border | `#F0E6DA` | `#343B4D` |
-| Success | `#238A65` | `#55C497` |
-| Danger | `#D64545` | `#FF7777` |
+| `--background` / `--page` | `#FFF9F1` | `#171A24` |
+| `--surface` | `#FFFFFF` | `#222736` |
+| `--text` | `#24283B` | `#F7F4EF` |
+| `--text-muted` / `--muted` | `#697386` | `#B5BDCC` |
+| `--brand` / `--coral` | `#FF6B6B` | `#FF8585` |
+| `--blue` | `#4D96FF` | `#79AEFF` |
+| `--yellow` | `#FFD166` | `#FFD166` |
+| `--mint` | `#77C9A4` | `#77C9A4` |
+| `--border` / `--line` | `#F0E6DA` | `#343B4D` |
+| `--success` | `#238A65` | `#52C99B` |
+| `--danger` | `#D64545` | `#FF7777` |
+| `--focus` | `#286AD6` | `#9DC4FF` |
+| `--on-brand` | `#24283B` | `#24283B` |
 
-CSS custom properties in `src/app/globals.css` are authoritative; use token-backed utilities. Radius: controls 10–12px, cards 16px, feature panels 24px. Spacing follows 4px increments. Content max width 1200px; mobile gutter 16px, larger gutter 24px. Interactive controls target at least 44px. Focus rings, hover/disabled states, errors, loading and empty states must be visible and accessible. Use Lucide icons; never use emoji as interface icons. Respect reduced motion.
+Dark brand values are provisional; verify contrast for each foreground/background pairing during implementation. Do not place raw hex values in feature components.
 
-## Shared UI
-`src/components/ui/` owns Button, Input, Textarea, Select, Card, Badge, Dialog, Skeleton, EmptyState, PageContainer and SectionHeading. Feature components compose these primitives and do not fork their visual rules.
+## Type, shape, spacing
 
-## Responsive review widths
-360px, 390px, 768px, 1024px and 1440px.
+- Typeface: Nunito Sans throughout; sensible system sans-serif fallback.
+- Card radius: 16px; large feature panels: 24px; controls: 10–12px.
+- Spacing increments: 4px. Shared container max width: 1200px (`75rem`).
+- Gutters: 16px mobile; 24px tablet/desktop.
+- Interactive targets: at least 44px where practical.
+- Use consistent focus rings, hover/disabled states, form errors, skeletons, and empty states.
+- Use Lucide icons. Emoji are not interface icons.
+
+## Responsive and accessible behavior
+
+Design mobile first; inspect 360, 390, 768, 1024, and 1440px widths. Preserve readable contrast and visible focus in both themes. Respect `prefers-reduced-motion`; avoid layout shifts and reserve image dimensions. Customer-facing floating controls must not obscure essential content.
+
+## Shared components
+
+The shared component set lives in `src/components/ui/`: Button, Input, Textarea, Select, Card, Badge, Dialog, Skeleton, EmptyState, PageContainer, and SectionHeading (both individual modules and the `src/components/ui/index.tsx` barrel). Reuse these components instead of making feature-specific visual forks.

@@ -11,9 +11,18 @@ export async function createSupabaseServerClient() {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (values) => {
-        try { values.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); }
-        catch { /* Server components cannot write cookies; middleware refreshes sessions. */ }
+        try {
+          for (const { name, value, options } of values) cookieStore.set(name, value, options);
+        } catch {
+          // Server Components cannot write cookies; Route Handlers and middleware own refresh writes.
+        }
       },
     },
   });
+}
+
+export async function createClient() {
+  const client = await createSupabaseServerClient();
+  if (!client) throw new Error("Supabase public configuration is missing.");
+  return client;
 }
