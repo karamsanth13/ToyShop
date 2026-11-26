@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admins.js";
 import catalogueRoutes from "./routes/catalogue.js";
 import shopRoutes from "./routes/shop.js";
+import adminCatalogueRoutes from "./routes/admin-catalogue.js";
+import engagementRoutes from "./routes/engagement.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 
 const app = express();
@@ -35,6 +37,8 @@ app.use(cookieParser());
 app.get("/api/health", (_req, res) => res.json({ data: { status: "ok" } }));
 app.use("/api/auth", authRoutes);
 app.use("/api/admins", adminRoutes);
+app.use("/api/admin/catalogue", adminCatalogueRoutes);
+app.use("/api", engagementRoutes);
 app.use("/api/catalogue", catalogueRoutes);
 app.use("/api", catalogueRoutes);
 app.use("/api/shop", shopRoutes);

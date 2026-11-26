@@ -8,7 +8,8 @@ function hashKey(key) {
   return createHmac("sha256", secret).update(key).digest("hex");
 }
 
-export const postgresRateLimitStore = {
+export function createPostgresRateLimitStore() {
+  return {
   localKeys: false,
   init(options) { this.windowMs = options.windowMs; },
   async increment(key) {
@@ -30,4 +31,7 @@ export const postgresRateLimitStore = {
   async resetKey(key) {
     await prisma.loginRateLimit.deleteMany({ where: { keyHash: hashKey(key) } });
   },
-};
+  };
+}
+
+export const postgresRateLimitStore = createPostgresRateLimitStore();

@@ -11,10 +11,14 @@ model AdminProfile {
   id           String    @id @default(uuid()) @db.Uuid
   fullName     String    @map("full_name") @db.VarChar(120)
   email        String    @unique @db.VarChar(254)
+  username     String    @unique @db.VarChar(40)
   passwordHash String    @map("password_hash") @db.VarChar(255)
   role         String    @default("Admin") @db.Text
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at") @db.Timestamptz(6)
   createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  activities   AdminActivity[]
 
   @@map("admin_profiles")
 }
@@ -31,6 +35,7 @@ model ShopDetails {
   whatsappNumber String?  @map("whatsapp_number") @db.VarChar(40)
   email          String?  @db.VarChar(254)
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  openingHours   String?  @map("opening_hours") @db.VarChar(1000)
 
   @@map("shop_details")
 }
@@ -80,16 +85,20 @@ model Product {
   price          Decimal             @db.Decimal(10, 2)
   images         String[]            @default([])
   description    String?             @db.Text
+  ageGroup       String?             @map("age_group") @db.VarChar(40)
+  stockQuantity  Int                 @default(0) @map("stock_quantity")
   availability   String              @default("in_stock") @db.Text
   isPublished    Boolean             @default(false) @map("is_published")
   isRare         Boolean             @default(false) @map("is_rare")
   isNew          Boolean             @default(false) @map("is_new")
   isRecommended  Boolean             @default(false) @map("is_recommended")
+  isBestSeller   Boolean             @default(false) @map("is_best_seller")
   createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
   category       Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   offerProducts  OfferProduct[]
   preBookings    PreBooking[]
+  enquiries      Enquiry[]
 
   @@index([categoryId])
   @@index([isPublished, createdAt])
@@ -102,6 +111,7 @@ model Offer {
   id          String         @id @default(uuid()) @db.Uuid
   title       String         @db.VarChar(160)
   description String?        @db.VarChar(2000)
+  discountPercent Int        @default(0) @map("discount_percent")
   startsAt    DateTime       @map("starts_at") @db.Timestamptz(6)
   endsAt      DateTime       @map("ends_at") @db.Timestamptz(6)
   isPublished Boolean        @default(false) @map("is_published")
@@ -130,10 +140,56 @@ model PreBooking {
   productId    String   @map("product_id") @db.Uuid
   customerName String   @map("customer_name") @db.VarChar(120)
   phone        String   @db.VarChar(40)
+  email        String?  @db.VarChar(254)
+  message      String?  @db.VarChar(1000)
+  status       String   @default("Pending") @db.VarChar(20)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   product      Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([createdAt])
   @@index([productId])
   @@map("pre_bookings")
+}
+
+model Enquiry {
+  id           String   @id @default(uuid()) @db.Uuid
+  customerName String   @map("customer_name") @db.VarChar(120)
+  email        String?  @db.VarChar(254)
+  phone        String?  @db.VarChar(40)
+  productId    String?  @map("product_id") @db.Uuid
+  message      String   @db.VarChar(2000)
+  status       String   @default("New") @db.VarChar(20)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("enquiries")
+}
+
+model NotificationSubscriber {
+  id         String    @id @default(uuid()) @db.Uuid
+  email      String    @unique @db.VarChar(254)
+  consentedAt DateTime @map("consented_at") @db.Timestamptz(6)
+  isActive   Boolean   @default(true) @map("is_active")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([isActive, createdAt])
+  @@map("notification_subscribers")
+}
+
+model AdminActivity {
+  id         String        @id @default(uuid()) @db.Uuid
+  adminId    String?       @map("admin_id") @db.Uuid
+  action     String        @db.VarChar(80)
+  targetType String        @map("target_type") @db.VarChar(80)
+  targetId   String?       @map("target_id") @db.VarChar(80)
+  details    String?       @db.VarChar(1000)
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  admin      AdminProfile? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([adminId, createdAt])
+  @@map("admin_activities")
 }

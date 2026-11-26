@@ -8,14 +8,15 @@ React + Vite + JavaScript + Tailwind, React Router, Lucide, Axios and React Cont
 
 ## Local setup
 
-1. Install Node `24.17.0` and npm `11.12.1`.
-2. Run `npm install`.
-3. Copy `.env.example` to `.env`; set `DATABASE_URL`, separate random secrets for `JWT_SECRET` and `RATE_LIMIT_SECRET`, and Cloudinary credentials for logo uploads.
-4. Create a local PostgreSQL database, then run `npm run db:generate` and `npm run db:migrate`.
-5. Start with `npm run dev` (Vite on port 5173, Express on port 3001).
-6. Set `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_NAME`, and `BOOTSTRAP_ADMIN_PASSWORD` (12+ characters) in `.env`, then run `npm run bootstrap:admin` once. Remove those bootstrap values after the account is created. Public signup is disabled.
+1. Install Node `24.17.0` and npm `11.12.1`, then run `npm install`.
+2. Copy `.env.example` to `.env` and set `DATABASE_URL`, `JWT_SECRET`, and `RATE_LIMIT_SECRET`. Use separate random secrets of at least 32 characters. Add Cloudinary credentials to enable image uploads.
+3. Create a PostgreSQL database, then run `npm run db:generate` and `npm run db:migrate` (or `npm run db:deploy` for a database with reviewed migrations).
+4. For a disposable local demo database, `npx prisma dev --name toyshop` starts Prisma's local Postgres service. Put its printed connection URL in `DATABASE_URL`; add `&pgbouncer=true&connection_limit=1` to the URL for this local service.
+5. Run `npm run db:seed` to insert the demo catalogue and accounts, then `npm run dev` to start Vite at `http://localhost:5173` and Express at port `3001`.
 
-Build with `npm run build`; serve the compiled client and API with `npm start`. Run `npm run lint` and `npm test` before handing off changes.
+The seed accounts are for local demonstrations only: `admin1 / 2026` and `superadmin / super2026`. The seed hashes both passwords with bcrypt and never puts them in frontend code. Do not use these accounts or the demo seed in production. To create a production Super Admin, set `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_USERNAME`, `BOOTSTRAP_ADMIN_NAME`, and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 12 characters, then run `npm run bootstrap:admin` once and remove those bootstrap values.
+
+Build with `npm run build`; serve the compiled client and API with `npm start`. Run `npm run lint` and `npm test` for code checks.
 
 ## Project layout
 
@@ -23,6 +24,10 @@ Build with `npm run build`; serve the compiled client and API with `npm start`. 
 - `server/` — Express API, middleware, validation and service integrations.
 - `prisma/` — shared PostgreSQL schema and migrations.
 - `docs/` — product, design, API, database, open-decision and QA contracts.
+
+## Functional scope
+
+Visitors can search and filter the seeded catalogue, view product details and active discounts, keep a browser-local wishlist, submit stock requests and enquiries, subscribe with consent, and use the rule-based shop helper. Admins manage products, categories, offers, pre-bookings, enquiries, subscribers, and shop details. Super Admins also manage Admin accounts and view the activity log. Purchases remain in person; subscriptions are stored but no email is sent until a delivery provider is configured.
 
 ## Product boundaries
 

@@ -8,18 +8,20 @@ import { cookieName, requireAdmin } from "../middleware/auth.js";
 import { postgresRateLimitStore } from "../services/rate-limit-store.js";
 
 const router = Router();
-const loginSchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(200) }).strict();
+const loginSchema = z.object({ username: z.string().trim().min(1).max(254), password: z.string().min(1).max(200) }).strict();
 const loginLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false, store: postgresRateLimitStore, keyGenerator: (req) => ipKeyGenerator(req.ip || req.socket.remoteAddress || "127.0.0.1"), message: { error: { code: "RATE_LIMITED", message: "Too many sign-in attempts. Try again later." } } });
 
 router.post("/login", loginLimit, async (req, res, next) => {
   try {
-    const { email, password } = loginSchema.parse(req.body);
-    const user = await prisma.adminProfile.findUnique({ where: { email: email.toLowerCase() } });
+    const { username, password } = loginSchema.parse(req.body);
+    const identity = username.toLowerCase();
+    const user = await prisma.adminProfile.findFirst({ where: { OR: [{ username: identity }, { email: identity }] } });
     const valid = user ? await bcrypt.compare(password, user.passwordHash) : await bcrypt.compare(password, "$2b$12$C6UzMDM.H6dfI/f/IKcEe.ou2f2mml5JCa6jUdYj.Yqxq7Ji7W6G2");
-    if (!user || !valid) return res.status(401).json({ error: { code: "INVALID_CREDENTIALS", message: "Email or password is incorrect." } });
+    if (!user?.isActive || !valid) return res.status(401).json({ error: { code: "INVALID_CREDENTIALS", message: "Username or password is incorrect." } });
+    await prisma.adminProfile.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
     const token = jwt.sign({}, process.env.JWT_SECRET, { subject: user.id, expiresIn: "8h", algorithm: "HS256" });
     res.cookie(cookieName, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 8 * 60 * 60 * 1000, path: "/" });
-    res.json({ data: { user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } } });
+    res.json({ data: { user: { id: user.id, fullName: user.fullName, username: user.username, email: user.email, role: user.role } } });
   } catch (error) { next(error); }
 });
 router.post("/logout", (_req, res) => { res.clearCookie(cookieName, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" }); res.json({ data: { success: true } }); });

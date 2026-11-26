@@ -4,16 +4,19 @@
 
 ## Models
 
-- `AdminProfile`: verified account identity, bcrypt hash and `ADMIN`/`SUPER_ADMIN` role. No public registration.
+- `AdminProfile`: unique username, verified account identity, bcrypt hash, active status, last login, and Admin/Super Admin role. No public registration.
 - `ShopDetails`: one configurable public shop record; logo URL and Cloudinary public ID are server managed.
 - `SocialLink`: configurable shop links.
-- `Category`, `Product`, `Offer`, `OfferProduct`: shared Member 1 catalogue entities. Product uses UUID; availability remains visible for both in-stock and out-of-stock products.
-- `PreBooking`: schema supports Product UUID, customer name, phone, and created date. Collection APIs/UI remain disabled pending approved consent/privacy wording.
+- `Category`, `Product`, `Offer`, `OfferProduct`: catalogue entities. Product uses UUID and tracks age group, stock quantity, availability, and featured flags; both in-stock and out-of-stock items remain visible.
+- `PreBooking`: product UUID, customer contact details, optional message, status, and timestamps. This is a stock enquiry, not an order.
+- `Enquiry`: customer contact details, optional product, message, status, and timestamps.
+- `NotificationSubscriber`: unique email, consent timestamp, and active/unsubscribed status. Delivery is not configured by the demo app.
+- `AdminActivity`: records administrative changes and links to the acting account when it still exists.
 - `LoginRateLimit`: stores only an HMAC of the rate-limit key, hit count, and expiry. The login limiter uses PostgreSQL, so counters are shared across API instances; raw IP addresses are not stored.
 
 ## Migration
 
-On an empty local PostgreSQL database, run `npm run db:generate`, then `npm run db:migrate`. Production uses `npm run db:deploy` after a reviewed migration. This initial migration is for an empty database; existing Supabase data/auth accounts need a separately planned export/import and migration baseline before applying it. No migration is applied by this repository change. Do not edit already-applied SQL; add a forward migration.
+On an empty local PostgreSQL database, run `npm run db:generate`, `npm run db:migrate`, and `npm run db:seed`. Production uses `npm run db:deploy` after a reviewed migration and must not use the demo seed. Do not edit already-applied SQL; add a forward migration.
 
 The API never returns admin password hashes, rate-limit keys, or pre-booking data publicly. This Express architecture does not use Supabase RLS; authorization is enforced by server middleware and database queries.
 
