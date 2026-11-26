@@ -18,10 +18,11 @@ export async function PATCH(request: Request) {
     address: parsed.data.address, map_location: parsed.data.mapLocation,
     phone: parsed.data.phone, whatsapp_number: parsed.data.whatsappNumber,
     email: parsed.data.email === "" ? null : parsed.data.email,
+    opening_hours: parsed.data.openingHours,
   };
   const supabase = await createClient();
   const { data, error } = await supabase.from("shop_details").update(row).eq("id", 1)
-    .select("name,description,logo_path,address,map_location,phone,whatsapp_number,email,updated_at").single();
+    .select("name,description,logo_path,address,map_location,phone,whatsapp_number,email,opening_hours,updated_at").single();
   if (error) return NextResponse.json({ error: { code: "SHOP_UPDATE_FAILED", message: "Could not save shop details." } }, { status: 500 });
   return NextResponse.json({ data });
 }

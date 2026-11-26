@@ -17,8 +17,10 @@ Current migration sequence:
 1. `202611250001_member2_auth_shop.sql` (Member 2): Admin profiles/role policies, shop/social tables, public shop logo bucket policies, and login rate limit.
 2. `202611250002_catalogue.sql` (Member 1): `categories` and `products` (category FK).
 3. `202611250003_offers.sql` (Member 1): `offers` and `offer_products` (FKs to products).
-4. Future Member 2 pre-booking migration referencing `public.products(id)` once the product contract is finalized.
-5. Future Member 2 subscriber migration after channel/contact/consent decisions.
+4. `202611260001_member2_shop_hours.sql` (Member 2): public opening-hours text on the singleton shop profile.
+5. `202611260002_member2_admin_lifecycle.sql` (Member 2): reversible Admin deactivation and role lookup exclusion for inactive profiles.
+6. Future Member 2 pre-booking migration referencing `public.products(id)` once the product contract is finalized.
+7. Future Member 2 subscriber migration after channel/contact/consent decisions.
 
 Catalogue write RLS policies currently fail closed until Member 1's write policies are wired to Member 2's `public.is_admin()` helper in a forward migration. Review and confirm the full sequence before applying to a shared database.
 

@@ -10,6 +10,7 @@ export async function ShopFooter() {
           <h2>{shop?.name?.trim() || "Toy Shop"}</h2>
           {shop?.description ? <p>{shop.description}</p> : <p>Find a little something for every kind of play.</p>}
         </section>
+        {shop?.opening_hours ? <section aria-labelledby="footer-hours-heading"><h3 id="footer-hours-heading">Opening hours</h3><p style={{ whiteSpace: "pre-line" }}>{shop.opening_hours}</p></section> : null}
         <section aria-labelledby="footer-contact-heading">
           <h3 id="footer-contact-heading">Contact</h3>
           {shop?.address ? <p>{shop.address}</p> : null}

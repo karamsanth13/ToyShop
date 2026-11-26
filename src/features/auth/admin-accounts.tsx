@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Database } from "@/types/database";
 
-type AdminUser = Pick<Database["public"]["Tables"]["admin_profiles"]["Row"], "id" | "full_name" | "email" | "role" | "created_at">;
+type AdminUser = Pick<Database["public"]["Tables"]["admin_profiles"]["Row"], "id" | "full_name" | "email" | "role" | "is_active" | "created_at">;
 
 export function AdminAccounts() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
@@ -41,10 +41,23 @@ export function AdminAccounts() {
   }
 
   async function remove(admin: AdminUser) {
-    if (!window.confirm(`Remove admin access for ${admin.full_name}?`)) return;
+    if (!window.confirm(`Deactivate ${admin.full_name}'s admin access? They can be reactivated later.`)) return;
     const response = await fetch(`/api/admins/${admin.id}`, { method: "DELETE" });
-    if (response.ok) { setAdmins((current) => current.filter((item) => item.id !== admin.id)); setStatus("Admin access removed."); }
-    else setStatus("Could not remove that admin account.");
+    if (response.ok) { setAdmins((current) => current.map((item) => item.id === admin.id ? { ...item, is_active: false } : item)); setStatus("Admin access deactivated."); }
+    else setStatus("Could not deactivate that admin account.");
+  }
+
+  async function update(admin: AdminUser, values: { fullName?: string; isActive?: boolean }) {
+    setBusy(true); setStatus("");
+    const response = await fetch(`/api/admins/${admin.id}`, {
+      method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(values),
+    });
+    if (response.ok) {
+      const result = await response.json();
+      setAdmins((current) => current.map((item) => item.id === admin.id ? result.data as AdminUser : item));
+      setStatus(values.isActive === true ? "Admin access reactivated." : values.isActive === false ? "Admin access deactivated." : "Admin account updated.");
+    } else setStatus("Could not update that admin account.");
+    setBusy(false);
   }
 
   return <div style={{ display: "grid", gap: "1.5rem" }}>
@@ -59,7 +72,19 @@ export function AdminAccounts() {
     </Card>
     <Card style={{ padding: "1.5rem" }}>
       <h2>Admin accounts</h2>
-      {admins.length ? <ul className="admin-social-list">{admins.map((admin) => <li key={admin.id}><span>{admin.full_name} · {admin.email} · {admin.role}</span>{admin.role === "Admin" ? <Button type="button" variant="secondary" onClick={() => remove(admin)}>Remove</Button> : <span>Protected</span>}</li>)}</ul> : <p>No admin profiles are available.</p>}
+      {admins.length ? <ul className="admin-social-list">{admins.map((admin) => <li key={admin.id}>
+        <div className="admin-account-details">
+          <span>{admin.email} · {admin.role} · {admin.is_active ? "Active" : "Deactivated"}</span>
+          {admin.role === "Admin" ? <form className="admin-name-form" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); update(admin, { fullName: String(data.get("fullName") ?? "") }); }}>
+            <Input aria-label={`Name for ${admin.email}`} name="fullName" required maxLength={120} defaultValue={admin.full_name} />
+            <Button type="submit" variant="secondary" disabled={busy}>Save name</Button>
+          </form> : <strong>{admin.full_name} · Protected account</strong>}
+        </div>
+        {admin.role === "Admin" ? admin.is_active
+          ? <Button type="button" variant="secondary" disabled={busy} onClick={() => remove(admin)}>Deactivate</Button>
+          : <Button type="button" variant="secondary" disabled={busy} onClick={() => update(admin, { isActive: true })}>Reactivate</Button>
+          : null}
+      </li>)}</ul> : <p>No admin profiles are available.</p>}
     </Card>
     {status ? <p role="status" aria-live="polite">{status}</p> : null}
   </div>;

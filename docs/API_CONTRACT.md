@@ -35,7 +35,7 @@ Example:
 - `GET /api/shop`: public shop profile and social links.
 - `PATCH /api/admin/shop`: Admin/Super Admin shop settings update.
 - `POST /api/admin/social-links`, `PATCH/DELETE /api/admin/social-links/{id}`: Admin/Super Admin social link management.
-- `GET/POST /api/admins`, `DELETE /api/admins/{id}`: Super Admin-only listing, invitation, and removal. Invitation delivery depends on the configured Supabase email provider.
+- `GET/POST /api/admins`, `PATCH/DELETE /api/admins/{id}`: Super Admin-only listing, invitation, Admin name edits, and reversible activation/deactivation. Invitation delivery depends on the configured Supabase email provider. Super Admin profiles cannot be modified through these routes.
 - `GET /auth/callback`: exchanges a Supabase invite code and returns the invited Admin to the protected dashboard.
 - Wishlist IDs and theme choice are device-local and have no API or database table.
 

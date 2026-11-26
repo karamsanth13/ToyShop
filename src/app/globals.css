@@ -118,10 +118,20 @@ button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 .contact-actions { display: grid; gap: 1rem; margin-block: 1rem; }
 .contact-action-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .contact-hint { margin: 0.375rem 0 0; color: var(--text-muted); font-size: 0.875rem; }
+.assistant-messages { display: grid; gap: 0.5rem; max-height: 14rem; overflow-y: auto; }
+.assistant-message { border: 1px solid var(--border); border-radius: var(--radius-control); padding: 0.75rem; background: var(--surface); }
+.assistant-message p { margin: 0; white-space: pre-line; }
+.assistant-message p + p { margin-top: 0.5rem; color: var(--text-muted); }
+.assistant-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.assistant-topics .button { font-size: 0.875rem; }
+.assistant-question-form { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; margin-top: 0.75rem; }
 .settings-form { display: grid; gap: 0.625rem; }
 .settings-form label { margin-top: 0.5rem; font-weight: 700; }
 .admin-social-list { padding: 0; list-style: none; }
 .admin-social-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: 0.75rem; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.admin-account-details { display: grid; flex: 1; gap: 0.5rem; min-width: 0; }
+.admin-name-form { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.admin-name-form .control { flex: 1; min-width: 12rem; }
 .social-edit-form { width: 100%; display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
 @keyframes pulse { 50% { opacity: 0.55; } }
 @media (min-width: 768px) { :root { --page-gutter: 1.5rem; } }

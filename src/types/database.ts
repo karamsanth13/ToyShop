@@ -46,15 +46,15 @@ export type Database = {
   public: {
     Tables: {
       admin_profiles: {
-        Row: { id: string; full_name: string; email: string; role: AdminRole; created_at: string; updated_at: string };
-        Insert: { id: string; full_name: string; email: string; role: AdminRole; created_at?: string; updated_at?: string };
-        Update: { id?: string; full_name?: string; email?: string; role?: AdminRole; created_at?: string; updated_at?: string };
+        Row: { id: string; full_name: string; email: string; role: AdminRole; is_active: boolean; created_at: string; updated_at: string };
+        Insert: { id: string; full_name: string; email: string; role: AdminRole; is_active?: boolean; created_at?: string; updated_at?: string };
+        Update: { id?: string; full_name?: string; email?: string; role?: AdminRole; is_active?: boolean; created_at?: string; updated_at?: string };
         Relationships: [];
       };
       shop_details: {
-        Row: { id: number; name: string | null; description: string | null; logo_path: string | null; address: string | null; map_location: string | null; phone: string | null; whatsapp_number: string | null; email: string | null; updated_at: string };
-        Insert: { id?: number; name?: string | null; description?: string | null; logo_path?: string | null; address?: string | null; map_location?: string | null; phone?: string | null; whatsapp_number?: string | null; email?: string | null; updated_at?: string };
-        Update: { id?: number; name?: string | null; description?: string | null; logo_path?: string | null; address?: string | null; map_location?: string | null; phone?: string | null; whatsapp_number?: string | null; email?: string | null; updated_at?: string };
+        Row: { id: number; name: string | null; description: string | null; logo_path: string | null; address: string | null; map_location: string | null; phone: string | null; whatsapp_number: string | null; email: string | null; opening_hours: string | null; updated_at: string };
+        Insert: { id?: number; name?: string | null; description?: string | null; logo_path?: string | null; address?: string | null; map_location?: string | null; phone?: string | null; whatsapp_number?: string | null; email?: string | null; opening_hours?: string | null; updated_at?: string };
+        Update: { id?: number; name?: string | null; description?: string | null; logo_path?: string | null; address?: string | null; map_location?: string | null; phone?: string | null; whatsapp_number?: string | null; email?: string | null; opening_hours?: string | null; updated_at?: string };
         Relationships: [];
       };
       social_links: {

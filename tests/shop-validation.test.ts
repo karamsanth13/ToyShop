@@ -3,9 +3,16 @@ import { shopSettingsSchema, socialLinkSchema } from "../src/lib/validation/shop
 
 describe("shop settings validation", () => {
   it("accepts the agreed public shop fields and normalizes whitespace", () => {
-    const result = shopSettingsSchema.safeParse({ name: "  Toy Shop  ", phone: null });
+    const result = shopSettingsSchema.safeParse({ name: "  Toy Shop  ", phone: null, openingHours: "  Tue–Sun: 10:00–18:00  " });
     expect(result.success).toBe(true);
-    if (result.success) expect(result.data.name).toBe("Toy Shop");
+    if (result.success) {
+      expect(result.data.name).toBe("Toy Shop");
+      expect(result.data.openingHours).toBe("Tue–Sun: 10:00–18:00");
+    }
+  });
+
+  it("rejects opening hours over the database limit", () => {
+    expect(shopSettingsSchema.safeParse({ openingHours: "x".repeat(1001) }).success).toBe(false);
   });
 
   it("rejects empty updates and unknown fields", () => {

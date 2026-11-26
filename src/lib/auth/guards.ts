@@ -24,7 +24,7 @@ export async function getCurrentUserRole(): Promise<AdminRole | null> {
     const { data, error } = await supabase
       .from("admin_profiles")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", user.id).eq("is_active", true)
       .maybeSingle();
     if (error || (data?.role !== "Admin" && data?.role !== "Super Admin")) return null;
     return data.role;
@@ -41,7 +41,7 @@ async function getAuthenticatedAdmin(): Promise<AuthenticatedAdmin> {
   const { data, error } = await supabase
     .from("admin_profiles")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", user.id).eq("is_active", true)
     .maybeSingle();
   if (error || (data?.role !== "Admin" && data?.role !== "Super Admin")) throw new ForbiddenError();
   return { userId: user.id, email: user.email, role: data.role };

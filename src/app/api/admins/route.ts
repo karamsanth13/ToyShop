@@ -13,7 +13,7 @@ function authError(cause: unknown) {
 export async function GET() {
   try { await requireSuperAdmin(); } catch (cause) { return authError(cause); }
   const supabase = createAdminClient();
-  const { data, error } = await supabase.from("admin_profiles").select("id,full_name,email,role,created_at").order("created_at");
+  const { data, error } = await supabase.from("admin_profiles").select("id,full_name,email,role,is_active,created_at").order("created_at");
   if (error) return NextResponse.json({ error: { code: "ADMIN_LIST_FAILED", message: "Could not load admin accounts." } }, { status: 500 });
   return NextResponse.json({ data });
 }

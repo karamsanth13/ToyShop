@@ -11,6 +11,7 @@ export const shopSettingsSchema = z.object({
   phone: optionalText(40),
   whatsappNumber: optionalText(40),
   email: z.email().max(254).nullable().or(z.literal("")),
+  openingHours: optionalText(1000),
 }).partial().strict().refine((value) => Object.keys(value).length > 0, "At least one shop field is required.");
 
 export const socialLinkSchema = z.object({

@@ -21,12 +21,14 @@ Inspect 360px, 390px, 768px, 1024px, and 1440px widths and both light/dark theme
 - [ ] Confirm header remains sticky, shop fallback is sensible, and configured logo/name render.
 - [ ] Confirm footer uses only configured contact/social/address data; test configured Google Maps location and missing-location fallback.
 - [ ] Sign in with Admin and Super Admin; verify visitor, Admin, and Super Admin permissions separately. Try invalid and repeated logins.
+- [ ] As Super Admin, edit an Admin name, deactivate and reactivate the account, then verify the deactivated account cannot sign in or access protected pages.
 - [ ] Verify no public sign-up, password recovery behavior, invitation email callback, and logout cookie clearing.
 - [ ] Try unauthorized direct requests to shop updates, social CRUD, admin list/create/remove, and verify 401/403 responses.
 - [ ] Verify the last Super Admin cannot be removed/demoted and an Admin cannot elevate their own role.
 - [ ] Update shop settings and social links; upload/remove an allowed logo; try unsupported and oversized files.
+- [ ] Set opening hours; verify they appear in the public footer and the contact helper.
 - [ ] Toggle theme, refresh, reopen, and check first paint and system preference when no saved choice exists.
-- [ ] Save/remove wishlist IDs; verify only this device stores them and no count is displayed. Repeat after Product API integration.
+- [ ] Save/remove wishlist IDs; verify products resolve, state survives refresh, and only this device stores the IDs. No saved count is displayed.
 - [ ] Contact helper: dismiss greeting, open, close from outside/Escape/button, copy phone, test `tel:` and WhatsApp encoding, missing numbers, and footer overlap.
 - [ ] Verify reduced-motion preference, keyboard focus visibility, dialog focus behavior, and screen-reader labels.
 - [ ] After Member 1 integration, test an in-stock and out-of-stock product, wishlist resolution, pre-booking validation/rate limit, and Admin-only pre-booking list.

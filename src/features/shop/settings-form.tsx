@@ -9,11 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Database } from "@/types/database";
 
-type Shop = Pick<Database["public"]["Tables"]["shop_details"]["Row"], "name" | "description" | "logo_path" | "address" | "map_location" | "phone" | "whatsapp_number" | "email">;
+type Shop = Pick<Database["public"]["Tables"]["shop_details"]["Row"], "name" | "description" | "logo_path" | "address" | "map_location" | "phone" | "whatsapp_number" | "email" | "opening_hours">;
 type SocialLink = Pick<Database["public"]["Tables"]["social_links"]["Row"], "id" | "platform" | "url" | "label" | "sort_order">;
 type ShopResponse = { data: { shop: Shop; socialLinks: SocialLink[] } };
 
-const initialShop: Shop = { name: "", description: "", logo_path: null, address: "", map_location: "", phone: "", whatsapp_number: "", email: "" };
+const initialShop: Shop = { name: "", description: "", logo_path: null, address: "", map_location: "", phone: "", whatsapp_number: "", email: "", opening_hours: "" };
 
 export function ShopSettingsForm() {
   const [shop, setShop] = useState<Shop>(initialShop);
@@ -49,7 +49,7 @@ export function ShopSettingsForm() {
       body: JSON.stringify({
         name: shop.name || null, description: shop.description || null, address: shop.address || null,
         mapLocation: shop.map_location || null, phone: shop.phone || null,
-        whatsappNumber: shop.whatsapp_number || null, email: shop.email || null,
+        whatsappNumber: shop.whatsapp_number || null, email: shop.email || null, openingHours: shop.opening_hours || null,
       }),
     });
     setBusy(false);
@@ -131,6 +131,7 @@ export function ShopSettingsForm() {
           <label htmlFor="shop-phone">Call phone</label><Input id="shop-phone" type="tel" maxLength={40} value={shop.phone ?? ""} onChange={(e) => setShop({ ...shop, phone: e.target.value })} />
           <label htmlFor="shop-whatsapp">WhatsApp number</label><Input id="shop-whatsapp" type="tel" maxLength={40} value={shop.whatsapp_number ?? ""} onChange={(e) => setShop({ ...shop, whatsapp_number: e.target.value })} />
           <label htmlFor="shop-email">Email</label><Input id="shop-email" type="email" maxLength={254} value={shop.email ?? ""} onChange={(e) => setShop({ ...shop, email: e.target.value })} />
+          <label htmlFor="shop-hours">Opening hours</label><Textarea id="shop-hours" maxLength={1000} rows={4} placeholder="Mon–Sat: 10:00–18:00&#10;Sunday: Closed" value={shop.opening_hours ?? ""} onChange={(e) => setShop({ ...shop, opening_hours: e.target.value })} />
           <Button disabled={busy}>{busy ? "Saving…" : "Save shop details"}</Button>
         </form>
       </Card>
