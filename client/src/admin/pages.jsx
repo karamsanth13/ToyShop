@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { api, getApiMessage } from "@/api/http.js";
 import { Button, PageContainer, SectionHeading } from "@/components/ui.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
+import { buildProductPayload } from "@/admin/product-payload.js";
 
 function useAdminResource(path, key) {
   const [items, setItems] = useState([]);
@@ -36,7 +37,6 @@ export function DashboardPage() {
 
 const emptyProduct = { name: "", slug: "", categoryId: "", price: "", description: "", ageGroup: "", stockQuantity: 0, images: [], isPublished: true, isRare: false, isNew: false, isRecommended: false, isBestSeller: false };
 function slugify(value) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
-
 export function ProductsPage() {
   const { items: products, loading, error, refresh, setError } = useAdminResource("/admin/catalogue/products", "products");
   const { items: categories } = useAdminResource("/admin/catalogue/categories", "categories");
@@ -44,7 +44,7 @@ export function ProductsPage() {
   function beginEdit(product = emptyProduct) { setSaved(""); setError(""); setForm({ ...emptyProduct, ...product, price: product.price?.toString() || "", categoryId: product.categoryId || "", images: product.images || [] }); }
   async function submit(event) {
     event.preventDefault(); if (!form || saving) return; setSaving(true); setError("");
-    const payload = { ...form, slug: form.slug || slugify(form.name), categoryId: form.categoryId || null, price: String(form.price), stockQuantity: Number(form.stockQuantity), ageGroup: form.ageGroup || null, description: form.description || null };
+    const payload = buildProductPayload(form);
     try { if (form.id) await api.patch(`/admin/catalogue/products/${form.id}`, payload); else await api.post("/admin/catalogue/products", payload); setSaved(form.id ? "Product updated." : "Product created."); setForm(null); await refresh({ q: query }); }
     catch (reason) { setError(getApiMessage(reason, "Product could not be saved.")); }
     finally { setSaving(false); }
