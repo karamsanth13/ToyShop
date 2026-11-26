@@ -42,6 +42,16 @@ async function ensureAccount({ username, email, fullName, role, password }) {
 }
 
 async function seed() {
+  const demoAdminPassword = process.env.DEMO_ADMIN_PASSWORD;
+  const demoSuperAdminPassword = process.env.DEMO_SUPER_ADMIN_PASSWORD;
+  const [existingDemoAdmin, existingDemoSuperAdmin] = await Promise.all([
+    prisma.adminProfile.findUnique({ where: { username: "admin1" }, select: { id: true } }),
+    prisma.adminProfile.findUnique({ where: { username: "superadmin" }, select: { id: true } }),
+  ]);
+  if ((!existingDemoAdmin && !demoAdminPassword) || (!existingDemoSuperAdmin && !demoSuperAdminPassword)) {
+    throw new Error("Set DEMO_ADMIN_PASSWORD and DEMO_SUPER_ADMIN_PASSWORD in the local environment before seeding demo accounts.");
+  }
+
   const categoryIds = new Map();
   for (const [index, item] of categories.entries()) {
     const category = await prisma.category.upsert({ where: { slug: item.slug }, create: { ...item, sortOrder: index, isPublished: true }, update: { ...item, sortOrder: index, isPublished: true } });
@@ -59,8 +69,8 @@ async function seed() {
     products.push(product);
   }
 
-  await ensureAccount({ username: "admin1", email: "admin1@toyshop.local", fullName: "Demo Admin", role: "Admin", password: "2026" });
-  await ensureAccount({ username: "superadmin", email: "superadmin@toyshop.local", fullName: "Demo Super Admin", role: "Super Admin", password: "super2026" });
+  await ensureAccount({ username: "admin1", email: "admin1@toyshop.local", fullName: "Demo Admin", role: "Admin", password: demoAdminPassword });
+  await ensureAccount({ username: "superadmin", email: "superadmin@toyshop.local", fullName: "Demo Super Admin", role: "Super Admin", password: demoSuperAdminPassword });
   await prisma.shopDetails.upsert({ where: { id: 1 }, create: { id: 1, name: "Toy Shop Demo", description: "A neighborhood toy shop for thoughtful gifts, playful discoveries and family favorites." }, update: {} });
 
   const offer = await prisma.offer.upsert({ where: { id: "11111111-1111-4111-8111-111111111111" }, create: { id: "11111111-1111-4111-8111-111111111111", title: "Build & Discover", description: "Save 15% on selected building and learning favorites.", discountPercent: 15, startsAt: new Date(Date.now() - 86400000), endsAt: new Date(Date.now() + 21 * 86400000), isPublished: true }, update: { title: "Build & Discover", description: "Save 15% on selected building and learning favorites.", discountPercent: 15, startsAt: new Date(Date.now() - 86400000), endsAt: new Date(Date.now() + 21 * 86400000), isPublished: true } });
@@ -75,7 +85,6 @@ async function seed() {
 
   await prisma.notificationSubscriber.upsert({ where: { email: "newsletter@example.test" }, create: { email: "newsletter@example.test", consentedAt: new Date() }, update: {} });
   console.log(`Seeded ${products.length} products, ${categories.length} categories, two demo accounts, one offer, and sample engagement data.`);
-  console.log("Demo sign-ins: admin1 / 2026; superadmin / super2026");
 }
 
 seed().catch((error) => { console.error("Database seed failed:", error); process.exitCode = 1; }).finally(() => prisma.$disconnect());
