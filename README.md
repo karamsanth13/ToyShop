@@ -1,22 +1,29 @@
-# Toy Shop Showroom
+# Toy Shop showroom
 
-Catalogue-first Next.js App Router foundation for one physical toy shop. Purchases happen in store; this v1 has no cart, checkout, payment or customer account.
+A responsive product showroom for one physical toy shop. Visitors can browse products, save a local wishlist, and use the shop's configured contact details. Purchases happen in person.
 
-## Setup
+## Stack
 
-1. Install Node.js `24.12.0` and npm `11.6.x` (see `.nvmrc` and `package.json`).
-2. Copy `.env.example` to `.env.local` and fill the Supabase URL and anon key when the project is provisioned. Never use service-role keys in browser code.
-3. Run `npm ci`, then `npm run dev`.
-4. Apply catalogue migrations only to a development database after Member 2 confirms the shared Product fields, role claim and RLS helper.
+React + Vite + JavaScript + Tailwind, React Router, Lucide, Axios and React Context; Node + Express REST API; PostgreSQL + Prisma; JWT + bcrypt; Zod; Cloudinary; Helmet, CORS and express-rate-limit.
 
-Without Supabase configuration, catalogue pages intentionally show empty states; no production fixture data or authentication bypass is provided.
+## Local setup
 
-## Scripts
+1. Install Node `24.17.0` and npm `11.12.1`.
+2. Run `npm install`.
+3. Copy `.env.example` to `.env`; set `DATABASE_URL`, separate random secrets for `JWT_SECRET` and `RATE_LIMIT_SECRET`, and Cloudinary credentials for logo uploads.
+4. Create a local PostgreSQL database, then run `npm run db:generate` and `npm run db:migrate`.
+5. Start with `npm run dev` (Vite on port 5173, Express on port 3001).
+6. Set `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_NAME`, and `BOOTSTRAP_ADMIN_PASSWORD` (12+ characters) in `.env`, then run `npm run bootstrap:admin` once. Remove those bootstrap values after the account is created. Public signup is disabled.
 
-- `npm run dev` — local server
-- `npm run lint` — ESLint
-- `npm run typecheck` — strict TypeScript check
-- `npm test` — unit tests
-- `npm run build` — production build
+Build with `npm run build`; serve the compiled client and API with `npm start`. Run `npm run lint` and `npm test` before handing off changes.
 
-See `docs/` for project, design, API, database and open-decision contracts. Member 2 must integrate the shared auth boundary and Storage configuration before catalogue administration or uploads can be enabled.
+## Project layout
+
+- `client/` — Vite app, React routes/components, API client and shared styles.
+- `server/` — Express API, middleware, validation and service integrations.
+- `prisma/` — shared PostgreSQL schema and migrations.
+- `docs/` — product, design, API, database, open-decision and QA contracts.
+
+## Product boundaries
+
+No customer sign-in, cart, checkout, online payment, public counts, or wishlist database. Out-of-stock items remain visible. Notification delivery and pre-booking consent wording require owner approval before those workflows are enabled.

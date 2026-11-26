@@ -1,9 +1,26 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Toy Shop project rules
 
-## This is NOT the Next.js you know
+## Permanent technology stack
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+- Frontend: React + Vite, JavaScript (ES6+), Tailwind CSS, React Router DOM, Lucide React, Axios, React Context.
+- Backend: Node.js + Express REST API, PostgreSQL + Prisma, JWT + bcrypt, Zod, Cloudinary, Helmet, CORS and express-rate-limit.
+- Do not introduce Next.js, TypeScript, MongoDB/Mongoose, Redux, or replacement frameworks/providers without explicit team approval.
+- Keep the established `client/`, `server/`, and `prisma/` project structure. Preserve existing behavior and shared product/catalogue contracts.
+- Node and npm versions are pinned in `.nvmrc` and `package.json`; preserve `package-lock.json` as the install source of truth.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+## Product and ownership rules
 
-<!-- END:nextjs-agent-rules -->
+- This is a digital showroom for one physical shop. No cart, checkout, online payments, customer accounts, public wishlist/view/pre-booking counts, or swipe-to-like behavior in v1.
+- Only Admin and Super Admin authenticate. Never expose public admin registration. Do not trust client-supplied roles.
+- Keep out-of-stock products visible and clearly labelled. Wishlist IDs remain in local storage; do not add a wishlist table.
+- `Product`, `Category`, and `Offer` are shared catalogue entities. Pre-bookings reference the canonical Product UUID; never create a competing Product model.
+- Do not claim to send notifications until a channel and provider are approved and configured. Do not invent shop details or customer consent wording.
+
+## Architecture and security
+
+- Use JavaScript modules and readable, small components/routes. Validate server inputs with Zod and return `{ data }` or `{ error: { code, message, details? } }`.
+- `requireAdmin(req,res,next)` authorizes either admin role; `requireSuperAdmin(req,res,next)` authorizes only Super Admin. Role comes from the verified JWT subject and database record.
+- Protect all writes on the server. Rate-limit login and public writes. Keep secrets server-only and commit only names in `.env.example`.
+- Store prices as PostgreSQL Decimal. Use UUID primary keys, timestamps, foreign keys and indexed lookup fields.
+- Use shared CSS variables/design tokens, accessible semantic UI, responsive layouts, visible focus, stable async states and reduced-motion support.
+- Do not stage, commit, push, merge, deploy or run production database commands unless the human explicitly requests that operation.
