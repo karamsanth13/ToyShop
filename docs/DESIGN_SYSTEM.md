@@ -1,6 +1,6 @@
 # Toy Shop Design System
 
-This is the shared visual specification for all members. Load Nunito Sans once from the root framework layout. Use CSS custom properties in `src/app/globals.css` as the only color source; components must not introduce feature-specific palettes, radius systems, spacing systems, fonts, icon families, or global overrides.
+This is the shared visual specification for all members. Load Nunito Sans once in `client/index.html`. Use CSS custom properties in `client/src/styles.css` as the only color source; components must not introduce feature-specific palettes, radius systems, spacing systems, fonts, icon families, or global overrides.
 
 ## Brand and color tokens
 

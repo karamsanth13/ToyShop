@@ -3,15 +3,23 @@
 ## Automated checks run in this workspace
 
 - `npm run lint` — passed.
-- `npm run typecheck` — passed.
-- `npm test` — passed (4 validation tests).
+- `npm test` — passed (5 validation tests).
 - `npm run build` — passed.
 
-## Not verified here
+## Local runtime checks
 
-- Supabase migration application, RLS allow/deny behavior, Auth login/invite flows, storage upload policies, login throttling, or private data access: no configured Supabase project or credentials were supplied.
-- Product integration, pre-booking writes/admin reads, and notification delivery: blocked by the missing Product contract and unresolved notification channel/consent decisions.
-- Manual browser/device visual and functional review: not performed. The member must perform and record it before proposing a push.
+- Prisma migrations applied and demo seed inserted 20 products, 8 categories, two demo accounts, an offer, a sample pre-booking, enquiry, and subscriber.
+- Local storefront returned HTTP 200; `/api/health` returned `ok`; catalogue returned 20 products and offers returned one active offer.
+- Demo Admin login succeeded and the protected dashboard returned the live 20-product count.
+- Both demo accounts signed in through the browser; Admin logout cleared the session, and Super Admin showed its extra account/activity navigation.
+- Browser rendered the seeded homepage, active offer, product detail, out-of-stock request form, and mobile navigation at 390px without console errors.
+- Admin API checks covered category and product create/edit/delete, offer create/edit/delete, Admin account create/edit/deactivate/reactivate, and role separation. Temporary records were removed afterward.
+- Visitor API checks covered search/filter, pre-booking and enquiry submissions with Admin status updates, and duplicate-safe subscription. Temporary records were removed afterward.
+
+## Remaining provider / device checks
+
+- Cloudinary upload needs credentials in `.env`; email delivery is intentionally disabled until a provider is configured.
+- Additional viewport/theme, shop settings/social link, image upload, wishlist actions, and keyboard/accessibility checks remain on the manual checklist below.
 - 500 concurrent visitors: not load-tested; see `LOAD_TEST_PLAN.md`.
 
 ## Manual device and workflow checklist
@@ -20,16 +28,17 @@ Inspect 360px, 390px, 768px, 1024px, and 1440px widths and both light/dark theme
 
 - [ ] Confirm header remains sticky, shop fallback is sensible, and configured logo/name render.
 - [ ] Confirm footer uses only configured contact/social/address data; test configured Google Maps location and missing-location fallback.
-- [ ] Sign in with Admin and Super Admin; verify visitor, Admin, and Super Admin permissions separately. Try invalid and repeated logins.
-- [ ] As Super Admin, edit an Admin name, deactivate and reactivate the account, then verify the deactivated account cannot sign in or access protected pages.
-- [ ] Verify no public sign-up, password recovery behavior, invitation email callback, and logout cookie clearing.
-- [ ] Try unauthorized direct requests to shop updates, social CRUD, admin list/create/remove, and verify 401/403 responses.
-- [ ] Verify the last Super Admin cannot be removed/demoted and an Admin cannot elevate their own role.
-- [ ] Update shop settings and social links; upload/remove an allowed logo; try unsupported and oversized files.
-- [ ] Set opening hours; verify they appear in the public footer and the contact helper.
+- [x] Sign in with Admin and Super Admin; verify role-specific navigation and protected access.
+- [x] Verify Admin logout clears the session and returns to login.
+- [ ] Attempt invalid credentials and verify public registration is unavailable.
+- [x] Verify protected-page redirect and that an Admin receives 403 for Super Admin account management.
+- [ ] Verify Super Admin cannot be removed through the Admin removal endpoint and an Admin cannot elevate their role.
+- [ ] Update shop settings and social links; upload an allowed logo; try unsupported and oversized files.
 - [ ] Toggle theme, refresh, reopen, and check first paint and system preference when no saved choice exists.
-- [ ] Save/remove wishlist IDs; verify products resolve, state survives refresh, and only this device stores the IDs. No saved count is displayed.
-- [ ] Contact helper: dismiss greeting, open, close from outside/Escape/button, copy phone, test `tel:` and WhatsApp encoding, missing numbers, and footer overlap.
+- [ ] Save/remove wishlist IDs; verify only this device stores them and no count is displayed; test deleted or unpublished product IDs.
+- [x] Open the rule-based helper and verify its opening-hours fallback; contact numbers are not configured, so call/WhatsApp remain clearly unavailable.
 - [ ] Verify reduced-motion preference, keyboard focus visibility, dialog focus behavior, and screen-reader labels.
-- [ ] After Member 1 integration, test an in-stock and out-of-stock product, wishlist resolution, pre-booking validation/rate limit, and Admin-only pre-booking list.
-- [ ] Once the notification channel is approved, test consent, subscriber privacy, and real provider delivery without claiming a send before it occurs.
+- [x] Test search/category/price filters, active offers, and an out-of-stock detail/request form.
+- [x] Submit a consented pre-booking request and verify its Admin status can be updated.
+- [x] Submit a customer enquiry and update its Admin status.
+- [x] Subscribe twice with consent and verify the email resolves to one subscriber record.
